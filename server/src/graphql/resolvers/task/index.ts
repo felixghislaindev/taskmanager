@@ -19,7 +19,6 @@ export const taskResolvers: IResolvers  = {
             {db}: {db: TasksDb}
             ):Promise<CreateTask> =>{
                 const createdTask = await db.tasks.insertOne({_id: new ObjectId(), title, description,status,author,created});
-                console.log(createdTask)
                 return {insertedId : new ObjectId(createdTask.insertedId)}
         },
         updateTask: (_root: any, {title,description,status}: TASK,) =>{
