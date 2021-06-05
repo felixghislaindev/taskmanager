@@ -1,11 +1,10 @@
-import React, {useState,useEffect} from 'react';
-import {server} from '../../lib/api'
+import React from 'react';
+import {server,useQuery} from '../../lib/api'
 import {
     CreateTask,
     CreatedTask,
     DeleteTask,
     DeleteTaskVariables,
-    Task,
     TasksList} from '../Tasks/types'
 const TASKS = `
 query Tasks{
@@ -47,7 +46,7 @@ mutation DeleteTask($id: ID!) {
 `
 
 export const Tasks = () => {
-    const [tasksList,setTasksList] = useState<Task[]|null>(null);
+    const {data,refetchApi} = useQuery<TasksList>(TASKS)
     /**
      * actions needed 
      * list tasks
@@ -67,18 +66,15 @@ export const Tasks = () => {
     })
         console.log(data)
     }
-    const fetchTasks = async () =>{
-        const {data} = await server.fetch<TasksList>({query:TASKS})
-        console.log(data)
-        setTasksList(data.tasks)
-    }
     const deleteTask = async (id:string) =>{
         const {data} = await server.fetch<DeleteTask,DeleteTaskVariables>({query:DELETE_TASKS, 
         variables: {id}})
+        refetchApi()
         console.log(data)
     }
     // const updateTask = () => {}
     // tasks listing
+    const tasksList = data ? data.tasks : null 
     const tasksListing = tasksList ? (
         <ul>
             {
@@ -96,7 +92,6 @@ export const Tasks = () => {
     return (
         <div>
             {tasksListing}
-            <button onClick={fetchTasks}>fetch tasks</button>
             <button onClick={createTask}>create task</button>
         </div>
     )
