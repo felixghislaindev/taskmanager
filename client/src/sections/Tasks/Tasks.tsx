@@ -1,9 +1,15 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import {server} from '../../lib/api'
-import {createdTask,DeleteTask,DeleteTaskVariables,Task,TasksList} from '../Tasks/types'
+import {
+    CreateTask,
+    CreatedTask,
+    DeleteTask,
+    DeleteTaskVariables,
+    Task,
+    TasksList} from '../Tasks/types'
 const TASKS = `
 query Tasks{
-    Tasks{
+    tasks{
         id
         title
         description
@@ -41,6 +47,7 @@ mutation DeleteTask($id: ID!) {
 `
 
 export const Tasks = () => {
+    const [tasksList,setTasksList] = useState<Task[]|null>(null);
     /**
      * actions needed 
      * list tasks
@@ -49,7 +56,7 @@ export const Tasks = () => {
      * delete task
      */
     const createTask = async () => {
-        const {data} = await server.fetch<createdTask,Task>({query:CREATE_TASK,
+        const {data} = await server.fetch<CreatedTask,CreateTask>({query:CREATE_TASK,
         variables: {
         title:"created by our client",
         description:"i work",
@@ -63,17 +70,33 @@ export const Tasks = () => {
     const fetchTasks = async () =>{
         const {data} = await server.fetch<TasksList>({query:TASKS})
         console.log(data)
+        setTasksList(data.tasks)
     }
-    const deleteTask = async () =>{
+    const deleteTask = async (id:string) =>{
         const {data} = await server.fetch<DeleteTask,DeleteTaskVariables>({query:DELETE_TASKS, 
-        variables: {id: '60b046f5cacd1b519044ea2e'}})
+        variables: {id}})
         console.log(data)
-
     }
+    // const updateTask = () => {}
+    // tasks listing
+    const tasksListing = tasksList ? (
+        <ul>
+            {
+                tasksList.map(task => {
+                    return (
+                            <li key={task.id}>
+                                {task.title}
+                                <button onClick={() => deleteTask(task.id)}>Delete Task</button>
+                                </li>
+                    )
+                })
+            }
+        </ul>
+    ) : null
     return (
         <div>
+            {tasksListing}
             <button onClick={fetchTasks}>fetch tasks</button>
-            <button onClick={deleteTask}>delete task</button>
             <button onClick={createTask}>create task</button>
         </div>
     )

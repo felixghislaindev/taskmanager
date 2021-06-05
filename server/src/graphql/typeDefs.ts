@@ -8,15 +8,19 @@ type Task{
     author: String!
     created: String!
 }
+type UpdatedTask {
+    matchedCount: Int!, 
+    modifiedCount: Int!
+}
 type CreatedTask {
     insertedId:ID!
 }
 type Query {
-    Tasks: [Task!]!
+    tasks: [Task!]!
 }
 type Mutation {
     createTask(title:String!, description:String!,status:String!,author:String!,created:String!):CreatedTask!
-    updateTask(id:ID!, title:String!, description:String!, status:String): Task!
+    updateTask(id:ID!, title:String!, description:String!, status:Boolean!): UpdatedTask!
     deleteTask(id:ID!) : Task!
 }
 `

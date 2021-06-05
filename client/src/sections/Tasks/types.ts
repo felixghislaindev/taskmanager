@@ -1,5 +1,5 @@
 export interface Task {
-    id?: string, 
+    id: string, 
     title: string,
     description: string,
     status: string,
@@ -9,7 +9,14 @@ export interface Task {
 export type TasksList = {
     tasks: Task[]
 }
-export interface createdTask{
+export interface CreateTask {
+    title: string,
+    description: string,
+    status: string,
+    author: string,
+    created: string,
+}
+export interface CreatedTask{
     insertedId: string
 }
 export interface DeleteTask{
